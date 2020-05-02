@@ -1,0 +1,57 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:NodeManager.Converters"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
+
+    <converters:SelectedItemToContentConverter x:Key="SelectedItemToContentConverter" />
+
+    <!--  this is the template for the items (options too)  -->
+    <DataTemplate
+        x:Key="MenuItemTemplateExtended"
+        DataType="{x:Type mah:HamburgerMenuIconItem}">
+
+        <Grid
+            x:Name="RootGrid"
+            Height="48"
+            Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="48" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ContentControl
+                Grid.Column="0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Content="{Binding Icon}"
+                Focusable="False" />
+            <TextBlock
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                FontSize="16"
+                Text="{Binding Label}" />
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger
+                Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type mah:HamburgerMenu}}, Path=IsPaneOpen}"
+                Value="False">
+                <Setter TargetName="RootGrid" Property="ToolTip" Value="{Binding ToolTip, Mode=OneWay}" />
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!--  ~1~  these are the templates for the view models  @1@  -->
+    <!-- <DataTemplate DataType="{x:Type viewModels:ControlCenterViewModel}"> -->
+    <!--     <views:ControlCenterView DataContext="{Binding}" /> -->
+    <!-- </DataTemplate> -->
+    <!-- <DataTemplate DataType="{x:Type viewModels:LogActivityViewModel}"> -->
+    <!--     <views:LogActivityView DataContext="{Binding}" /> -->
+    <!-- </DataTemplate> -->
+    <!-- <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}"> -->
+    <!--     <views:SettingsView DataContext="{Binding}" /> -->
+    <!-- </DataTemplate> -->
+    <!-- <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}"> -->
+    <!--     <views:SettingsView DataContext="{Binding}" /> -->
+    <!-- </DataTemplate> -->
+
+</ResourceDictionary>
