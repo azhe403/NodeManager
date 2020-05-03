@@ -25,7 +25,9 @@ namespace NodeManager.Helpers
         {
             if (string.IsNullOrEmpty(caption))
             {
-                caption = Application.Current.MainWindow.Title;
+                caption = Application.Current.MainWindow != null
+                    ? Application.Current.MainWindow.Title
+                    : "NodeManager";
             }
 
             return MessageBox.Show(message, caption, messageBoxButton, MessageBoxImage.Warning);

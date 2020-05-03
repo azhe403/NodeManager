@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using NodeManager.Models;
 
 namespace NodeManager.ViewModels
 {
@@ -55,6 +56,11 @@ namespace NodeManager.ViewModels
         public MainWindowViewModel(IRegionManager regionManager)
         {
             BuildMenuItems();
+
+            if (EnvHelper.IsAdministrator())
+            {
+                Title += " (Administrator)";
+            }
 
             PrismHelper.RegionManager = regionManager;
 
@@ -116,7 +122,7 @@ namespace NodeManager.ViewModels
         private async Task LoadLogsAsync()
         {
             var date = DateTime.Now.ToString("yyyyMMdd");
-            var logPath = $@"Storage\Logs\App-{date}.log";
+            var logPath = Path.Combine(AppConfig.LogsPath, $"App-{date}.log");
 
             ListLogs = new List<string>();
             using (FileStream fs = new FileStream(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))

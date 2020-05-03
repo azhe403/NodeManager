@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using myoddweb.directorywatcher;
 using myoddweb.directorywatcher.interfaces;
 using NodeManager.Helpers;
+using NodeManager.Models;
 
 namespace NodeManager.ViewModels
 {
@@ -50,7 +51,7 @@ namespace NodeManager.ViewModels
             var watch = new Watcher();
 
             // Add a request.
-            watch.Add(new Request("Storage", true));
+            watch.Add(new Request(AppConfig.BaseLocalAppData, true));
 
             watch.OnTouchedAsync += WatchOnChangedAsync;
 
@@ -58,24 +59,26 @@ namespace NodeManager.ViewModels
             watch.Start();
         }
 
-        private async Task WatchOnChangedAsync(IFileSystemEvent e, CancellationToken token)
+        private Task WatchOnChangedAsync(IFileSystemEvent e, CancellationToken token)
         {
-            await Task.Run(() =>
-            {
-                //Log.Information("Storage changed..");
+            // await Task.Run(() =>
+            // {
+            //Log.Information("Storage changed..");
 
-                CalculateTemp();
-            }, token);
+            CalculateTemp();
+            // }, token);
+
+            return Task.CompletedTask;
         }
 
         private void CalculateTemp()
         {
             if (EnvHelper.InDesignMode) return;
 
-            TempSize = @"Storage\Temp".DirSize2().SizeFormat();
-            LogsSize = @"Storage\Logs".DirSize2().SizeFormat();
-            NodeSize = @"Storage\Nodes".DirSize3().SizeFormat();
-            CacheSize = @"Storage\Caches".DirSize2().SizeFormat();
+            TempSize = AppConfig.TempPath.DirSize2().SizeFormat();
+            LogsSize = AppConfig.LogsPath.DirSize2().SizeFormat();
+            NodeSize = AppConfig.NodePath.DirSize3().SizeFormat();
+            CacheSize = AppConfig.CachesPath.DirSize2().SizeFormat();
         }
     }
 }

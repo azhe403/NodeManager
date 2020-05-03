@@ -1,4 +1,11 @@
-﻿using System;
+﻿using Flurl.Http;
+using NodeManager.Helpers;
+using NodeManager.Models;
+using Prism.Commands;
+using Prism.Mvvm;
+using Prism.Regions;
+using Serilog;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
@@ -6,17 +13,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Flurl.Http;
-using NodeManager.Helpers;
-using NodeManager.Models;
-using Prism.Commands;
-using Prism.Mvvm;
-using Prism.Regions;
-using Prism.Services.Dialogs;
-using Serilog;
 
 namespace NodeManager.ViewModels
 {
@@ -26,6 +24,7 @@ namespace NodeManager.ViewModels
         private string _refreshCaption;
         private string _searchBox;
         private bool _isIdle;
+        private bool _isEnableNodeJs;
         private bool _isOpenDownloadPane;
         private DataTable _listNodeVersionVersions;
         private NodeJsRow _selectedNodeJs;
@@ -59,6 +58,16 @@ namespace NodeManager.ViewModels
         {
             get => _isIdle;
             set => SetProperty(ref _isIdle, value);
+        }
+
+        public bool IsEnableNodeJs
+        {
+            get => _isEnableNodeJs;
+            set
+            {
+                SetProperty(ref _isEnableNodeJs, value);
+                EnsureEnvironmentVar(value);
+            }
         }
 
         public bool IsOpenDownloadPane
@@ -116,11 +125,14 @@ namespace NodeManager.ViewModels
             RefreshCaption = "Refresh";
             SearchBox = "";
 
+            IsEnableNodeJs = AppConfig.IsPathEnvSet;
+
             NodeJsCollection = new ObservableCollection<NodeJsRow>();
 
-            Parallel.Invoke(async () => await LoadVersionAsync());
+            // Parallel.Invoke(async () => await LoadVersionAsync());
+            Task.WhenAll(LoadVersionAsync());
 
-            EnsureEnvironmentVar();
+            // EnsureEnvironmentVar();
         }
 
         private async Task LoadVersionAsync()
@@ -133,8 +145,9 @@ namespace NodeManager.ViewModels
                 RefreshCaption = "Refreshing..";
                 IsIdle = false;
 
-                var installDir = $@"Storage\Nodes\";
-                var localJson = $@"Storage\Caches\node-registry.json";
+                var installDir = AppConfig.NodePath;
+                var fileStamp = DateTime.Now.ToString("yyyy-MM-dd");
+                var localJson = Path.Combine(AppConfig.CachesPath, $"node-registry_{fileStamp}.json");
 
                 var url = "https://nodejs.org/dist/index.json";
                 Log.Information($"Loading NodeJs registry");
@@ -189,9 +202,10 @@ namespace NodeManager.ViewModels
             }
             catch (Exception ex)
             {
-                var errorMsg = "Error when loading from Registry. Please check your internet connection";
-                DialogHelper.ErrorDialog(errorMsg);
-                //MessageBox.Show("Error when loading from Registry. Please check your internet connection");
+                const string errorMsg = "Error when loading from Registry. Please check your internet connection.";
+                var dialogResult = DialogHelper.ErrorDialog(errorMsg + " Are you want to refresh?",
+                    messageBoxButton: MessageBoxButton.YesNo);
+                if (dialogResult == MessageBoxResult.Yes) await LoadVersionAsync();
 
                 Log.Error(ex, "Error fetch from Registry");
                 Log.Information(errorMsg);
@@ -213,9 +227,8 @@ namespace NodeManager.ViewModels
             var distUrl = SelectedNodeJs.DistUrl;
             var isInstalled = SelectedNodeJs.IsInstalled;
             var fileName = Path.GetFileName(distUrl);
-            var localFile = $@"{Environment.CurrentDirectory}\Storage\Temp\{fileName}";
-            var installDir = $@"{Environment.CurrentDirectory}\Storage\Nodes\";
-            var symLinkTarget = @"C:\Apps\nodejs\";
+            var localFile = Path.Combine(AppConfig.TempPath, fileName);
+            var installDir = AppConfig.NodePath;
             var dirs = Directory.GetDirectories(installDir);
             var installNode = dirs.FirstOrDefault(str => str.Contains(version));
 
@@ -226,9 +239,7 @@ namespace NodeManager.ViewModels
             {
                 InstallCaption = "Uninstalling..";
 
-                Log.Information($"Deleting {installNode}");
-                installNode.DeleteAllFiles();
-                Directory.Delete(installNode);
+                await installNode.DeleteAllFilesAsync(true);
 
                 await LoadVersionAsync();
 
@@ -249,17 +260,25 @@ namespace NodeManager.ViewModels
 
                     InstallCaption = "Installing..";
 
-                    Log.Information($"Downloading file {distUrl}");
-                    //await distUrl.DownloadFileAsync("/", localFile);
-                    DownloadFileAsync(distUrl, localFile);
-                    //downloadWorker.RunWorkerAsync();
-                    // Log.Information($"Saved to {localFile}");
+                    if (!await localFile.IsZipValidAsync())
+                    {
+                        Log.Information($"Downloading file {distUrl}");
+                        //await distUrl.DownloadFileAsync("/", localFile);
+                        DownloadFileAsync(distUrl, localFile);
+                        //downloadWorker.RunWorkerAsync();
+                        // Log.Information($"Saved to {localFile}");
 
-                    //Log.Information("Extracting zip file");
-                    //localFile.FastUnzip(installDir);
+                        //Log.Information("Extracting zip file");
+                        //localFile.FastUnzip(installDir);
 
-                    //Log.Information("Creating Symlink");
-                    //installNode.CreateSymlink(symLinkTarget);
+                        //Log.Information("Creating Symlink");
+                        //installNode.CreateSymlink(symLinkTarget);
+                    }
+                    else
+                    {
+                        Log.Information("Previous temp file is available, skip downloading");
+                        await OnDownloadCompleteAsync();
+                    }
 
                     // Log.Information($"Installing Node {version} complete.");
                     // InstallCaption = "Uninstall";
@@ -288,7 +307,7 @@ namespace NodeManager.ViewModels
             var isInstalled = SelectedNodeJs.IsInstalled;
             InstallCaption = isInstalled ? "Uninstall" : "Install";
 
-            EnsureEnvironmentVar();
+            // EnsureEnvironmentVar();
         }
 
         private void OnSearchBoxChanged()
@@ -306,20 +325,36 @@ namespace NodeManager.ViewModels
             }
         }
 
-        private void OnDownloadComplete()
+        private async Task OnDownloadCompleteAsync()
         {
             var version = SelectedNodeJs.NodeVersion;
             var distUrl = SelectedNodeJs.DistUrl;
             var isInstalled = SelectedNodeJs.IsInstalled;
             var fileName = Path.GetFileName(distUrl);
-            var localFile = $@"{Environment.CurrentDirectory}\Storage\Temp\{fileName}";
-            var installDir = $@"{Environment.CurrentDirectory}\Storage\Nodes\";
-            var symLinkTarget = @"C:\Apps\nodejs\";
-            var dirs = Directory.GetDirectories(installDir);
-            var installNode = dirs.FirstOrDefault(str => str.Contains(version));
-            Log.Information("Extracting zip file");
-            localFile.FastUnzip(installDir);
+            var localFile = Path.Combine(AppConfig.TempPath, fileName);
+            var installDir = AppConfig.NodePath;
+            var symLinkTarget = AppConfig.SymlinkPath;
 
+            if (!await localFile.IsZipValidAsync())
+            {
+                const string corruptMsg = "Zip file may corrupt. Please re-download";
+                Log.Information(corruptMsg);
+                DialogHelper.WarnDialog(corruptMsg);
+
+                IsOpenDownloadPane = false;
+                IsIdle = true;
+                return;
+            }
+
+            DownloadTitle = $"Installing {version}";
+            DownloadDetail = "";
+
+            Log.Information("Extracting zip file");
+            await localFile.FastUnzipAsync(installDir);
+
+            // var dirs = Directory.GetDirectories(installDir);
+            // var installNode = dirs.FirstOrDefault(str => str.Contains(version));
+            var installNode = installDir.FindPath(version);
             Log.Information("Creating Symlink");
             installNode.CreateSymlink(symLinkTarget);
 
@@ -329,13 +364,33 @@ namespace NodeManager.ViewModels
             IsIdle = true;
         }
 
-        private static void EnsureEnvironmentVar()
+        private static void EnsureEnvironmentVar(bool installNode)
         {
-            var installDir = $@"{Environment.CurrentDirectory}\Storage\Nodes\";
-            var listPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User).Split(';');
-            var filtered = listPath.Where(path => !path.Replace("\\", @"\").Contains(@"C:\Program Files\nodejs"))
-                .ToArray();
-            var merge = filtered.Join(";");
+            var installDir = AppConfig.NodePath;
+            var newEnvPath = "";
+            var oldEnvPath = AppConfig.ListEnvPath;
+
+            if (installNode)
+            {
+                Log.Information("Enabling NodeJS..");
+                oldEnvPath = oldEnvPath.Where(path => !path
+                    .Replace("\\", @"\")
+                    .Contains(AppConfig.SymlinkPath)).ToList();
+                oldEnvPath.Add(AppConfig.SymlinkPath);
+                newEnvPath = oldEnvPath.ToArray().Join(";");
+                Log.Information("NodeJS enabled successfully.");
+            }
+            else
+            {
+                Log.Information("Disabling NodeJS");
+                oldEnvPath = oldEnvPath.Where(path => !path
+                        .Replace("\\", @"\")
+                        .Contains(AppConfig.SymlinkPath)).ToList();
+                newEnvPath = oldEnvPath.ToArray().Join(";");
+                Log.Information("NodeJS disabled successfully.");
+            }
+
+            Environment.SetEnvironmentVariable("PATH", newEnvPath, EnvironmentVariableTarget.User);
         }
 
         #region Downloader
@@ -343,6 +398,7 @@ namespace NodeManager.ViewModels
         private string _downloadSpeed;
         private string _downloadProgress;
         private string _downloadSize;
+        private string _downloadTitle;
         private string _downloadDetail;
         private int _downloadPercentage;
 
@@ -367,6 +423,12 @@ namespace NodeManager.ViewModels
             set => SetProperty(ref _downloadSize, value);
         }
 
+        public string DownloadTitle
+        {
+            get => _downloadTitle;
+            set => SetProperty(ref _downloadTitle, value);
+        }
+
         public string DownloadDetail
         {
             get => _downloadDetail;
@@ -381,6 +443,7 @@ namespace NodeManager.ViewModels
 
         public void DownloadFileAsync(string urlAddress, string location)
         {
+            DownloadTitle = $"Initializing..";
             using (webClient = new WebClient())
             {
                 webClient.DownloadFileCompleted += Completed;
@@ -423,6 +486,7 @@ namespace NodeManager.ViewModels
             //    (e.BytesReceived / 1024d / 1024d).ToString("0.00"),
             //    (e.TotalBytesToReceive / 1024d / 1024d).ToString("0.00"));
 
+            DownloadTitle = $"Downloading Node {SelectedNodeJs.NodeVersion}";
             DownloadProgress = e.BytesReceived.ToDouble().SizeFormat();
             DownloadSize = e.TotalBytesToReceive.ToDouble().SizeFormat();
 
@@ -444,7 +508,7 @@ namespace NodeManager.ViewModels
             else
             {
                 Log.Information("Download completed!");
-                OnDownloadComplete();
+                OnDownloadCompleteAsync();
             }
         }
 

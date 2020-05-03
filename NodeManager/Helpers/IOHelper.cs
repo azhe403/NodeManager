@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.Zip;
 using Serilog;
 using SymbolicLinkSupport;
@@ -9,11 +10,13 @@ namespace NodeManager.Helpers
 {
     internal static class IOHelper
     {
+        #region Directory
+
         public static string EnsureDirectory(this string dirPath)
         {
             var path = Path.GetDirectoryName(dirPath);
 
-            Log.Information($"Ensuring Dir: {path}");
+            Log.Information($"Ensuring dDir {path}");
             if (Directory.Exists(path))
             {
                 return dirPath;
@@ -27,29 +30,22 @@ namespace NodeManager.Helpers
             return dirPath;
         }
 
-        public static void DeleteFile(this string path)
+        public static string DeleteDirectory(this string dirPath)
         {
-            if (File.Exists(path))
-            {
-                Log.Information($"Deleting {path}");
-                File.Delete(path);
-            }
-        }
+            var path = Path.GetDirectoryName(dirPath);
 
-        public static void DeleteAllFiles(this string path)
-        {
-            DirectoryInfo di = new DirectoryInfo(path);
-
-            Log.Information($"Cleaning {path}");
-            foreach (FileInfo file in di.GetFiles())
+            Log.Information($"Deleting dir {path}");
+            if (!Directory.Exists(path))
             {
-                file.Delete();
+                return dirPath;
             }
 
-            foreach (DirectoryInfo dir in di.GetDirectories())
+            if (Directory.Exists(path))
             {
-                dir.Delete(true);
+                Directory.Delete(path);
             }
+
+            return dirPath;
         }
 
         public static string SearchPath(string targetDir, string filter)
@@ -93,13 +89,13 @@ namespace NodeManager.Helpers
                    dir.GetDirectories().Sum(di => DirSize2(path));
         }
 
-        public static double DirSize3(this string p)
+        public static double DirSize3(this string path)
         {
             try
             {
                 // 1.
                 // Get array of all file names.
-                string[] a = Directory.GetFiles(p, "*.*", SearchOption.AllDirectories);
+                string[] a = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
 
                 // 2.
                 // Calculate total bytes of all files in a loop.
@@ -122,15 +118,71 @@ namespace NodeManager.Helpers
             }
         }
 
+        public static bool IsDirExist(this string dirPath)
+        {
+            return Directory.Exists(dirPath);
+        }
+
+        public static string FindPath(this string dirPath, string filter)
+        {
+            Log.Information($"Find path contains '{filter}' in {dirPath}");
+            var dirs = Directory.GetDirectories(dirPath);
+            var installNode = dirs.FirstOrDefault(str => str.Contains(filter));
+            Log.Information($"Found {installNode}");
+            return installNode;
+        }
+
+        #endregion Directory
+
+        #region File
+
         public static bool IsFileExist(this string filePath)
         {
             return File.Exists(filePath);
         }
 
-        public static bool IsDirExist(this string filePath)
+        public static void DeleteFile(this string path)
         {
-            return Directory.Exists(filePath);
+            if (File.Exists(path))
+            {
+                Log.Information($"Deleting {path}");
+                File.Delete(path);
+            }
         }
+
+        public static void DeleteAllFiles(this string path, bool andThis = false)
+        {
+            DirectoryInfo di = new DirectoryInfo(path);
+
+            Log.Information($"Cleaning {path}");
+            foreach (FileInfo file in di.GetFiles())
+            {
+                file.Delete();
+            }
+
+            foreach (DirectoryInfo dir in di.GetDirectories())
+            {
+                dir.Delete(true);
+            }
+
+            if (andThis)
+            {
+                Log.Information($"Deleting {path}");
+                Directory.Delete(path);
+            }
+        }
+
+        public static async Task DeleteAllFilesAsync(this string path, bool andThis)
+        {
+            await Task.Run(() =>
+            {
+                DeleteAllFiles(path, andThis);
+            });
+        }
+
+        #endregion File
+
+        #region Zip Archiver
 
         public static void FastUnzip(this string filePath, string destinationPath, bool createEmptyDir = false)
         {
@@ -140,10 +192,60 @@ namespace NodeManager.Helpers
                 CreateEmptyDirectories = createEmptyDir
             };
 
-            // Will always overwrite if target filenames already exist
+            // Will always overwrite if target filename s already exist
             fastZip.ExtractZip(filePath, destinationPath, null);
             Log.Information($"Extracted to {destinationPath}");
         }
+
+        public static async Task FastUnzipAsync(this string filePath, string destinationPath, bool createEmptyDir = false)
+        {
+            await Task.Run(() =>
+            {
+                FastUnzip(filePath, destinationPath, createEmptyDir);
+            });
+        }
+
+        public static bool IsZipValid(this string filePath)
+        {
+            bool isValid;
+            Log.Information($"Validating {filePath}");
+
+            if (!filePath.IsFileExist())
+            {
+                Log.Information("Zip Validation skipped because file is not exist.");
+                return false;
+            }
+
+            try
+            {
+                var zipFile = new ZipFile(filePath);
+                isValid = zipFile.TestArchive(true, TestStrategy.FindFirstError, null);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error validating Zip");
+                isValid = false;
+            }
+
+            Log.Information($"Is {filePath} valid: {isValid}");
+            return isValid;
+        }
+
+        public static async Task<bool> IsZipValidAsync(this string filePath)
+        {
+            var isValid = false;
+
+            await Task.Run(() =>
+            {
+                isValid = IsZipValid(filePath);
+            });
+
+            return isValid;
+        }
+
+        #endregion Zip Archiver
+
+        #region Symlink
 
         public static void CreateSymlink(this string dirPath, string targetPath)
         {
@@ -151,6 +253,9 @@ namespace NodeManager.Helpers
 
             var dirInfo = new DirectoryInfo(dirPath);
             dirInfo.CreateSymbolicLink(targetPath);
+
+            var isSymlink = dirInfo.IsSymbolicLinkValid();
+            Log.Information($"Is created: {isSymlink}");
         }
 
         public static bool IsSymlink(this string dirPath)
@@ -158,5 +263,7 @@ namespace NodeManager.Helpers
             var dirInfo = new DirectoryInfo(dirPath);
             return dirInfo.IsSymbolicLinkValid();
         }
+
+        #endregion Symlink
     }
 }

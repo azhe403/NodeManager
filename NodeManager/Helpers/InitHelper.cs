@@ -1,8 +1,9 @@
-﻿using Serilog;
+﻿using NodeManager.Models;
+using Serilog;
 
 namespace NodeManager.Helpers
 {
-    internal class InitHelper
+    internal static class InitHelper
     {
         public static void PrepareAll()
         {
@@ -14,10 +15,10 @@ namespace NodeManager.Helpers
 
         public static void PrepareDirectory()
         {
-            @"Storage\Logs\".EnsureDirectory();
-            @"Storage\Caches\".EnsureDirectory();
-            @"Storage\Temp\".EnsureDirectory();
-            @"Storage\Nodes\".EnsureDirectory();
+            AppConfig.LogsPath.EnsureDirectory();
+            AppConfig.CachesPath.EnsureDirectory();
+            AppConfig.TempPath.EnsureDirectory();
+            AppConfig.NodePath.EnsureDirectory();
         }
 
         public static void LoadConfig()

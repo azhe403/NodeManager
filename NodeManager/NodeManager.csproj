@@ -75,6 +75,7 @@
     <Compile Include="Helpers\NpmRegistryHelper.cs" />
     <Compile Include="Helpers\SerilogHelper.cs" />
     <Compile Include="Helpers\StrHelper.cs" />
+    <Compile Include="Models\AppConfig.cs" />
     <Compile Include="Models\GlobalProperty.cs" />
     <Compile Include="Models\NodeJs.cs" />
     <Compile Include="Models\NodeJsRow.cs" />

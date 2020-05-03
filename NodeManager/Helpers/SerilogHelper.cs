@@ -1,13 +1,15 @@
 ﻿using System;
+using System.IO;
+using NodeManager.Models;
 using Serilog;
 
 namespace NodeManager.Helpers
 {
-    internal class SerilogHelper
+    internal static class SerilogHelper
     {
         public static void ConfigureSerilog()
         {
-            var filePath = $"Storage/Logs/App-.log";
+            var filePath = Path.Combine(AppConfig.LogsPath, "App-.log");
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.File(filePath, rollingInterval: RollingInterval.Day,
                     flushToDiskInterval: TimeSpan.FromSeconds(1),

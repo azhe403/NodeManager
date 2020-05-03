@@ -23,10 +23,10 @@ namespace NodeManager
             InitHelper.PrepareAll();
         }
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            AppCenter.Start("abf25fa8-61ab-4f91-a577-5db1df1318b3", typeof(Analytics), typeof(Crashes));
-        }
+        // protected override void OnStartup(StartupEventArgs e)
+        // {
+        //     AppCenter.Start("abf25fa8-61ab-4f91-a577-5db1df1318b3", typeof(Analytics), typeof(Crashes));
+        // }
 
         private void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
