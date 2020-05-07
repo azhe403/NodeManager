@@ -91,10 +91,12 @@ namespace NodeManager.Helpers
                    dir.GetDirectories().Sum(di => DirSize2(path));
         }
 
-        public static double DirSize3(this string path)
+        public static double DirSize3(this string path, bool logging = true)
         {
             try
             {
+                if (logging) Log.Information($"Getting size of directory {path}");
+
                 // 1.
                 // Get array of all file names.
                 string[] a = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
@@ -116,15 +118,15 @@ namespace NodeManager.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error calculating directory size - 3. Return will -1");
+                if (logging)Log.Error(ex, "Error calculating directory size - 3. Return will -1");
                 return -1;
             }
         }
 
-        public static async Task<double> DirSize3Async(this string path)
+        public static async Task<double> DirSize3Async(this string path, bool logging = true)
         {
             double dirSize = 0;
-            await Task.Run(() => { dirSize = DirSize3(path); });
+            await Task.Run(() => { dirSize = DirSize3(path, logging); });
 
             return dirSize;
         }
