@@ -13,5 +13,10 @@ namespace NodeManager.Helpers
         {
             return source.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
         }
+
+        public static bool IsNullOrEmpty(this string str)
+        {
+            return string.IsNullOrEmpty(str);
+        }
     }
 }

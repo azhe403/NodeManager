@@ -15,5 +15,10 @@ namespace NodeManager.Helpers
         {
             return Convert.ToDouble(num);
         }
+
+        public static bool ToBool(this object obj)
+        {
+            return Convert.ToBoolean(obj);
+        }
     }
 }
