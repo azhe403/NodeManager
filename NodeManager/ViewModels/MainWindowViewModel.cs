@@ -1,4 +1,4 @@
-﻿using MahApps.Metro.Controls;
+using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 using myoddweb.directorywatcher;
 using myoddweb.directorywatcher.interfaces;
@@ -103,7 +103,7 @@ namespace NodeManager.ViewModels
             var watch = new Watcher();
 
             // Add a request.
-            watch.Add(new Request(@"Storage\Logs", true));
+            watch.Add(new Request(AppConfig.LogsPath, true));
 
             watch.OnTouchedAsync += Watch_OnTouchedAsync; ;
 
