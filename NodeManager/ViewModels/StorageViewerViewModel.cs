@@ -1,4 +1,5 @@
-﻿using Prism.Mvvm;
+﻿using System.Diagnostics;
+using Prism.Mvvm;
 using System.Threading;
 using System.Threading.Tasks;
 using myoddweb.directorywatcher;
@@ -14,6 +15,7 @@ namespace NodeManager.ViewModels
         private string _logsSize;
         private string _nodeSize;
         private string _cacheSize;
+        private Stopwatch _stopwatch;
 
         public string TempSize
         {
@@ -41,6 +43,9 @@ namespace NodeManager.ViewModels
 
         public StorageViewerViewModel()
         {
+            _stopwatch = new Stopwatch();
+            _stopwatch.Start();
+
             CalculateTemp();
             StorageWatcher();
         }
@@ -65,7 +70,14 @@ namespace NodeManager.ViewModels
             // {
             //Log.Information("Storage changed..");
 
-            CalculateTemp();
+            if (_stopwatch.Elapsed.Seconds >= 1)
+            {
+                _stopwatch.Reset();
+                _stopwatch.Stop();
+                CalculateTemp();
+                _stopwatch.Start();
+            }
+
             // }, token);
 
             return Task.CompletedTask;
