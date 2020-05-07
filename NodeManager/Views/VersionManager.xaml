@@ -43,23 +43,45 @@
                     Width="110"
                     Binding="{Binding Path=ReleaseDate}"
                     Header="Release Date" />
+                <!--  <DataGridCheckBoxColumn  -->
+                <!--  Width="100"  -->
+                <!--  Binding="{Binding Path=IsLts}"  -->
+                <!--  Header="Is LTS" />  -->
+                <DataGridTextColumn
+                    Width="90"
+                    Binding="{Binding Path=LtsName}"
+                    Header="LTS Name" />
                 <DataGridCheckBoxColumn
                     Width="100"
                     Binding="{Binding Path=IsInstalled}"
                     Header="Is Installed" />
-                <DataGridCheckBoxColumn
-                    Width="100"
-                    Binding="{Binding Path=IsLts}"
-                    Header="Is LTS" />
                 <DataGridTextColumn
                     Width="140"
-                    Binding="{Binding Path=LtsName}"
-                    Header="LTS Name" />
+                    Binding="{Binding Path=InstallationSize}"
+                    Header="Installation Size" />
                 <!--  <DataGridTextColumn  -->
                 <!--  Width="*"  -->
                 <!--  Binding="{Binding Path=DistUrl}"  -->
                 <!--  Header="Dist URL" />  -->
             </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu IsEnabled="{Binding IsIdle}">
+                    <MenuItem
+                        Command="{Binding InstallOrUninstallCommand}"
+                        CommandParameter="True"
+                        Header="Install only" />
+                    <MenuItem
+                        Command="{Binding InstallOrUninstallCommand}"
+                        CommandParameter="False"
+                        Header="Install and activate" />
+                    <MenuItem
+                        Command="{Binding ActivateSelectedCommand}"
+                        Header="Activate" />
+                    <MenuItem
+                        Command="{Binding InstallOrUninstallCommand}"
+                        Header="{Binding InstallCaption}" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
         </DataGrid>
         <Button
             Width="93"
@@ -70,15 +92,15 @@
             Command="{Binding RefreshVersionCommand, IsAsync=True}"
             Content="{Binding RefreshCaption}"
             IsEnabled="{Binding IsIdle, IsAsync=True}" />
-        <Button
-            Width="93"
-            Height="34"
-            Margin="0,50,110,0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Command="{Binding InstallSelectedCommand, IsAsync=True}"
-            Content="{Binding InstallCaption}"
-            IsEnabled="{Binding IsIdle, IsAsync=True}" />
+        <!--  <Button  -->
+        <!--  Width="93"  -->
+        <!--  Height="34"  -->
+        <!--  Margin="0,50,110,0"  -->
+        <!--  HorizontalAlignment="Right"  -->
+        <!--  VerticalAlignment="Top"  -->
+        <!--  Command="{Binding InstallOrUninstallCommand, IsAsync=True}"  -->
+        <!--  Content="{Binding InstallCaption}"  -->
+        <!--  IsEnabled="{Binding IsIdle, IsAsync=True}" />  -->
         <TextBox
             Width="235"
             Height="34"
@@ -88,6 +110,7 @@
             VerticalContentAlignment="Center"
             mah:TextBoxHelper.Watermark="Search.."
             mah:TextBoxHelper.WatermarkWrapping="NoWrap"
+            IsEnabled="{Binding IsIdle}"
             Text="{Binding SearchBox, UpdateSourceTrigger=PropertyChanged}" />
         <ComboBox
             x:Name="comboBox"
