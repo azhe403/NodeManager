@@ -1,4 +1,4 @@
-using Flurl.Http;
+﻿using Flurl.Http;
 using NodeManager.Helpers;
 using NodeManager.Models;
 using Prism.Commands;
@@ -171,7 +171,7 @@ namespace NodeManager.ViewModels
                     var isLts = nodeJs.Lts.Bool ?? true;
                     var ltsName = nodeJs.Lts.Enum.ToString() ?? "Non-LTS";
                     var distUrl = $"https://nodejs.org/dist/{nodeJs.NodeVersion}/node-{nodeJs.NodeVersion}-win-x64.zip";
-                    var installationPath = installDir.FindPath(nodeVersion);
+                    var installationPath = installDir.FindPath(nodeVersion, logging: false);
                     var isInstalled = installationPath != null;
                     var installationSize = (await installationPath.DirSize3Async()).SizeFormat();
                     // if (!isInstalled) installationSize = "Not installed";
