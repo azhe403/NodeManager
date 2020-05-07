@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
+using NodeManager.Models;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace NodeManager.Helpers
 {
@@ -21,7 +25,7 @@ namespace NodeManager.Helpers
         }
 
         public static MessageBoxResult WarnDialog(string message, string caption = null,
-           MessageBoxButton messageBoxButton = MessageBoxButton.OK)
+            MessageBoxButton messageBoxButton = MessageBoxButton.OK)
         {
             if (string.IsNullOrEmpty(caption))
             {

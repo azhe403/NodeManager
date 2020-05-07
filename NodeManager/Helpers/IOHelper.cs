@@ -67,12 +67,14 @@ namespace NodeManager.Helpers
             {
                 size += fi.Length;
             }
+
             // Add subdirectory sizes.
             DirectoryInfo[] dis = d.GetDirectories();
             foreach (DirectoryInfo di in dis)
             {
                 size += DirSize(path);
             }
+
             return size;
         }
 
@@ -112,8 +114,9 @@ namespace NodeManager.Helpers
                 // Return total size
                 return b;
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Error(ex, "Error calculating directory size - 3");
                 return -1;
             }
         }
@@ -174,10 +177,7 @@ namespace NodeManager.Helpers
 
         public static async Task DeleteAllFilesAsync(this string path, bool andThis)
         {
-            await Task.Run(() =>
-            {
-                DeleteAllFiles(path, andThis);
-            });
+            await Task.Run(() => { DeleteAllFiles(path, andThis); });
         }
 
         #endregion File
@@ -197,29 +197,28 @@ namespace NodeManager.Helpers
             Log.Information($"Extracted to {destinationPath}");
         }
 
-        public static async Task FastUnzipAsync(this string filePath, string destinationPath, bool createEmptyDir = false)
+        public static async Task FastUnzipAsync(this string filePath, string destinationPath,
+            bool createEmptyDir = false)
         {
-            await Task.Run(() =>
-            {
-                FastUnzip(filePath, destinationPath, createEmptyDir);
-            });
+            await Task.Run(() => { FastUnzip(filePath, destinationPath, createEmptyDir); });
         }
 
         public static bool IsZipValid(this string filePath)
         {
             bool isValid;
-            Log.Information($"Validating {filePath}");
 
             if (!filePath.IsFileExist())
             {
-                Log.Information("Zip Validation skipped because file is not exist.");
+                Log.Information($"Zip Validation skipped because file {filePath} is not exist.");
                 return false;
             }
 
             try
             {
+                Log.Information($"Validating {filePath}");
                 var zipFile = new ZipFile(filePath);
                 isValid = zipFile.TestArchive(true, TestStrategy.FindFirstError, null);
+                zipFile.Close();
             }
             catch (Exception ex)
             {
@@ -235,10 +234,7 @@ namespace NodeManager.Helpers
         {
             var isValid = false;
 
-            await Task.Run(() =>
-            {
-                isValid = IsZipValid(filePath);
-            });
+            await Task.Run(() => { isValid = IsZipValid(filePath); });
 
             return isValid;
         }
