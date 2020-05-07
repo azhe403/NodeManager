@@ -1,4 +1,4 @@
-﻿using NodeManager.Models;
+using NodeManager.Models;
 using Serilog;
 
 namespace NodeManager.Helpers
@@ -21,6 +21,7 @@ namespace NodeManager.Helpers
             AppConfig.NodePath.EnsureDirectory();
         }
 
+            //     AppCenter.Start("abf25fa8-61ab-4f91-a577-5db1df1318b3", typeof(Analytics), typeof(Crashes));
         public static void LoadConfig()
         {
             SerilogHelper.ConfigureSerilog();
