@@ -1,11 +1,13 @@
-﻿using Flurl.Http;
+using Flurl.Http;
 using NodeManager.Helpers;
 using NodeManager.Models;
 using Prism.Commands;
 using Prism.Mvvm;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -24,7 +26,7 @@ namespace NodeManager.ViewModels
         private bool _isIdle, _isEnableNodeJs, _isOpenDownloadPane, _downloadNodeOnly;
         private DataTable _listNodeVersionVersions;
         private NodeJsRow _selectedNodeJs;
-        private ObservableCollection<NodeJsRow> _nodeJsDataCollection, _nodeJsDataFilter;
+        private ObservableCollection<NodeJsRow> _nodeJsDataCollection, _nodeJsDataFiltered;
 
         public string InstallCaption
         {
@@ -102,10 +104,10 @@ namespace NodeManager.ViewModels
             set => SetProperty(ref _nodeJsDataCollection, value);
         }
 
-        public ObservableCollection<NodeJsRow> NodeJsFilter
+        public ObservableCollection<NodeJsRow> NodeJsFiltered
         {
-            get => _nodeJsDataFilter;
-            set => SetProperty(ref _nodeJsDataFilter, value);
+            get => _nodeJsDataFiltered;
+            set => SetProperty(ref _nodeJsDataFiltered, value);
         }
 
         public DelegateCommand RefreshVersionCommand { get; set; }
@@ -173,7 +175,7 @@ namespace NodeManager.ViewModels
                     var distUrl = $"https://nodejs.org/dist/{nodeJs.NodeVersion}/node-{nodeJs.NodeVersion}-win-x64.zip";
                     var installationPath = installDir.FindPath(nodeVersion, logging: false);
                     var isInstalled = installationPath != null;
-                    var installationSize = (await installationPath.DirSize3Async()).SizeFormat();
+                    var installationSize = (await installationPath.DirSize3Async(false)).SizeFormat();
                     // if (!isInstalled) installationSize = "Not installed";
 
                     NodeJsCollection.Add(new NodeJsRow()
@@ -189,7 +191,7 @@ namespace NodeManager.ViewModels
                         InstallationPath = installationPath
                     });
 
-                    NodeJsFilter = NodeJsCollection;
+                    NodeJsFiltered = NodeJsCollection;
                 }
 
                 var loadedMsg = $"NodeJs loaded {NodeJsCollection.Count} items";
@@ -259,14 +261,14 @@ namespace NodeManager.ViewModels
         {
             if (!string.IsNullOrEmpty(SearchBox))
             {
-                NodeJsFilter = NodeJsCollection.Where(node =>
+                NodeJsFiltered = NodeJsCollection.Where(node =>
                         node.NodeVersion.Contains(SearchBox) ||
                         node.LtsName.Contains(SearchBox))
                     .ToObservableCollection();
             }
             else
             {
-                NodeJsFilter = NodeJsCollection;
+                NodeJsFiltered = NodeJsCollection;
             }
         }
 
