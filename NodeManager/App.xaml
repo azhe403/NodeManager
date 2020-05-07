@@ -12,8 +12,10 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />
 
-                <ResourceDictionary Source="pack://application:,,,/Styles/ButtonStyle.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/Styles/HamburgerMenu.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ResourceDictionary/Styles/ButtonStyle.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ResourceDictionary/Styles/HamburgerMenu.xaml" />
+
+                <ResourceDictionary Source="pack://application:,,,/ResourceDictionary/ValueDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

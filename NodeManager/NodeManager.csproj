@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -99,11 +99,15 @@
     <Compile Include="Views\PackageManager.xaml.cs">
       <DependentUpon>PackageManager.xaml</DependentUpon>
     </Compile>
-    <Page Include="Styles\ButtonStyle.xaml">
+    <Page Include="ResourceDictionary\Styles\ButtonStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Styles\HamburgerMenu.xaml">
+    <Page Include="ResourceDictionary\Styles\HamburgerMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionary\ValueDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
