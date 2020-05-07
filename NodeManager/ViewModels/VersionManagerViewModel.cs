@@ -359,7 +359,9 @@ namespace NodeManager.ViewModels
             await installNode.DeleteAllFilesAsync(true);
             await LoadVersionAsync();
 
-            Log.Information($"Uninstalling Node {nodeVersion} complete.");
+            var successMsg = $"Uninstalling Node {nodeVersion} complete.";
+            Log.Information(successMsg);
+            NotifyHelper.Info(successMsg);
 
             InstallCaption = "Install";
             IsIdle = true;

@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="NodeManager.Views.VersionManager"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -27,7 +27,7 @@
             IsEnabled="{Binding IsIdle}"
             IsReadOnly="True"
             IsTextSearchEnabled="True"
-            ItemsSource="{Binding NodeJsFilter}"
+            ItemsSource="{Binding NodeJsFiltered}"
             SelectedItem="{Binding SelectedNodeJs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             SelectionMode="Single">
             <DataGrid.Columns>
