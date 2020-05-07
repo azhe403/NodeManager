@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -116,9 +116,17 @@ namespace NodeManager.Helpers
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Error calculating directory size - 3");
+                Log.Error(ex, "Error calculating directory size - 3. Return will -1");
                 return -1;
             }
+        }
+
+        public static async Task<double> DirSize3Async(this string path)
+        {
+            double dirSize = 0;
+            await Task.Run(() => { dirSize = DirSize3(path); });
+
+            return dirSize;
         }
 
         public static bool IsDirExist(this string dirPath)
