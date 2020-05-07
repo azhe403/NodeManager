@@ -192,7 +192,9 @@ namespace NodeManager.ViewModels
                     NodeJsFilter = NodeJsCollection;
                 }
 
-                Log.Information($"NodeJs loaded {NodeJsCollection.Count} items");
+                var loadedMsg = $"NodeJs loaded {NodeJsCollection.Count} items";
+                Log.Information(loadedMsg);
+                NotifyHelper.Info(loadedMsg);
             }
             catch (Exception ex)
             {
