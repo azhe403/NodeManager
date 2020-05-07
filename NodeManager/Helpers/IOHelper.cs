@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -134,12 +134,16 @@ namespace NodeManager.Helpers
             return Directory.Exists(dirPath);
         }
 
-        public static string FindPath(this string dirPath, string filter)
+        public static string FindPath(this string dirPath, string filter, bool logging = true)
         {
-            Log.Information($"Find path contains '{filter}' in {dirPath}");
+            if (logging) Log.Information($"Find path contains '{filter}' in {dirPath}");
             var dirs = Directory.GetDirectories(dirPath);
             var installNode = dirs.FirstOrDefault(str => str.Contains(filter));
-            Log.Information($"Found {installNode}");
+
+            if (!installNode.IsNullOrEmpty())
+                if (logging)
+                    Log.Information($"Found {installNode}");
+
             return installNode;
         }
 
