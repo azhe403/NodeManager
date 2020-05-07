@@ -89,7 +89,7 @@ namespace NodeManager.ViewModels
 
             TempSize = AppConfig.TempPath.DirSize2().SizeFormat();
             LogsSize = AppConfig.LogsPath.DirSize2().SizeFormat();
-            NodeSize = AppConfig.NodePath.DirSize3().SizeFormat();
+            NodeSize = AppConfig.NodePath.DirSize3(false).SizeFormat();
             CacheSize = AppConfig.CachesPath.DirSize2().SizeFormat();
         }
     }
