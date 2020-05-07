@@ -296,13 +296,14 @@ namespace NodeManager.ViewModels
             DownloadTitle = $"Installing {version}";
             DownloadDetail = "";
 
-            Log.Information("Extracting zip file");
             await localFile.FastUnzipAsync(installDir);
 
             if (!DownloadNodeOnly)
             {
                 ActivateSelectedNode();
             }
+
+            await LoadVersionAsync();
 
             var successMsg = $"Installing Node {version} complete.";
             Log.Information(successMsg);
