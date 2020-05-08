@@ -1,4 +1,4 @@
-using MahApps.Metro.Controls;
+﻿using MahApps.Metro.Controls;
 using MahApps.Metro.IconPacks;
 using myoddweb.directorywatcher;
 using myoddweb.directorywatcher.interfaces;
@@ -9,6 +9,7 @@ using Prism.Regions;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace NodeManager.ViewModels
         private string _title = "Node Version Manager";
         private List<string> listLogs;
         private int _selectedLine;
+        private Stopwatch _stopwatchLogs;
         private HamburgerMenuItemCollection _hamburgerMenuItemCollection;
 
         public string Title
@@ -63,6 +65,7 @@ namespace NodeManager.ViewModels
             }
 
             PrismHelper.RegionManager = regionManager;
+            _stopwatchLogs = new Stopwatch();
 
             Parallel.Invoke(async () => await LoadLogsAsync());
 
@@ -75,21 +78,21 @@ namespace NodeManager.ViewModels
             {
                 new HamburgerMenuIconItem()
                 {
-                    Icon = new PackIconMaterialLight(){Kind = PackIconMaterialLightKind.Download},
+                    Icon = new PackIconMaterialLight() {Kind = PackIconMaterialLightKind.Download},
                     Label = "Version Manager",
                     ToolTip = "Version Manager",
                     Tag = new VersionManager()
                 },
                 new HamburgerMenuIconItem()
                 {
-                    Icon = new PackIconMaterialLight(){Kind = PackIconMaterialLightKind.Repeat},
+                    Icon = new PackIconMaterialLight() {Kind = PackIconMaterialLightKind.Repeat},
                     Label = "Package Manager",
                     ToolTip = "Package Manager",
                     Tag = new PackageManager()
                 },
                 new HamburgerMenuIconItem()
                 {
-                    Icon = new PackIconFeatherIcons(){Kind =  PackIconFeatherIconsKind.Settings},
+                    Icon = new PackIconFeatherIcons() {Kind = PackIconFeatherIconsKind.Settings},
                     Label = "Settings",
                     ToolTip = "Settings",
                     Tag = new Settings()
@@ -105,18 +108,25 @@ namespace NodeManager.ViewModels
             // Add a request.
             watch.Add(new Request(AppConfig.LogsPath, true));
 
-            watch.OnTouchedAsync += Watch_OnTouchedAsync; ;
+            watch.OnTouchedAsync += Watch_OnTouchedAsync;
+            ;
 
             // start watching
             watch.Start();
+            _stopwatchLogs.Start();
         }
 
         private async Task Watch_OnTouchedAsync(IFileSystemEvent e, CancellationToken token)
         {
             await Task.Run(async () =>
             {
-                await LoadLogsAsync();
-            });
+                if (_stopwatchLogs.Elapsed.Seconds >= 1)
+                {
+                    _stopwatchLogs.Stop();
+                    await LoadLogsAsync();
+                    _stopwatchLogs.Start();
+                }
+            }, token);
         }
 
         private async Task LoadLogsAsync()

@@ -48,14 +48,6 @@ namespace NodeManager.Helpers
             return dirPath;
         }
 
-        public static string SearchPath(string targetDir, string filter)
-        {
-            var dirs = Directory.GetDirectories(targetDir);
-            var filteredDir = dirs.FirstOrDefault(str => str.Contains(filter));
-
-            return filteredDir;
-        }
-
         public static double DirSize(this string path)
         {
             var d = new DirectoryInfo(path);
@@ -118,7 +110,7 @@ namespace NodeManager.Helpers
             }
             catch (Exception ex)
             {
-                if (logging)Log.Error(ex, "Error calculating directory size - 3. Return will -1");
+                if (logging) Log.Error(ex, "Error calculating directory size - 3. Return will -1");
                 return -1;
             }
         }
@@ -152,6 +144,14 @@ namespace NodeManager.Helpers
         #endregion Directory
 
         #region File
+
+        public static string FindFile(this string dirPath, string filter)
+        {
+            var dirs = Directory.GetFiles(dirPath);
+            var filteredDir = dirs.FirstOrDefault(str => str.Contains(filter));
+
+            return filteredDir;
+        }
 
         public static bool IsFileExist(this string filePath)
         {

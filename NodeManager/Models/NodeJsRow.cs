@@ -11,5 +11,6 @@
         public bool IsInstalled { get; set; }
         public string InstallationSize { get; set; }
         public string InstallationPath { get; set; }
+        public bool IsCacheAvailable { get; set; }
     }
 }

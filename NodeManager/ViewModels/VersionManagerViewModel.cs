@@ -1,4 +1,4 @@
-using Flurl.Http;
+﻿using Flurl.Http;
 using NodeManager.Helpers;
 using NodeManager.Models;
 using Prism.Commands;
@@ -27,6 +27,8 @@ namespace NodeManager.ViewModels
         private DataTable _listNodeVersionVersions;
         private NodeJsRow _selectedNodeJs;
         private ObservableCollection<NodeJsRow> _nodeJsDataCollection, _nodeJsDataFiltered;
+        private ObservableCollection<NodeJsFilter> _nodeJsFilters;
+        private ObservableCollection<NodeJsFilter> _selectedNodeJsFilters;
 
         public string InstallCaption
         {
@@ -110,6 +112,18 @@ namespace NodeManager.ViewModels
             set => SetProperty(ref _nodeJsDataFiltered, value);
         }
 
+        public ObservableCollection<NodeJsFilter> NodeJsFilters
+        {
+            get => _nodeJsFilters;
+            set => SetProperty(ref _nodeJsFilters, value);
+        }
+
+        public ObservableCollection<NodeJsFilter> SelectedNodeJsFilters
+        {
+            get => _selectedNodeJsFilters;
+            set => SetProperty(ref _selectedNodeJsFilters, value);
+        }
+
         public DelegateCommand RefreshVersionCommand { get; set; }
         public DelegateCommand<string> InstallOrUninstallCommand { get; set; }
         public DelegateCommand<bool> UninstallNodeCommand { get; set; }
@@ -131,9 +145,30 @@ namespace NodeManager.ViewModels
             IsEnableNodeJs = AppConfig.IsPathEnvSet;
 
             NodeJsCollection = new ObservableCollection<NodeJsRow>();
+            NodeJsFilters = new ObservableCollection<NodeJsFilter>()
+            {
+                new NodeJsFilter()
+                {
+                    Id = "is_lts",
+                    Name = "IsLTS"
+                },
+                new NodeJsFilter()
+                {
+                    Id = "is_installed",
+                    Name = "IsInstalled"
+                }
+            };
+
+            SelectedNodeJsFilters = new ObservableCollection<NodeJsFilter>();
+            SelectedNodeJsFilters.CollectionChanged += SelectedNodeJsFiltersOnCollectionChanged;
 
             Parallel.Invoke(async () => await LoadVersionAsync());
             // Task.WhenAll(LoadVersionAsync());
+        }
+
+        private void SelectedNodeJsFiltersOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task LoadVersionAsync()
@@ -176,6 +211,7 @@ namespace NodeManager.ViewModels
                     var installationPath = installDir.FindPath(nodeVersion, logging: false);
                     var isInstalled = installationPath != null;
                     var installationSize = (await installationPath.DirSize3Async(false)).SizeFormat();
+                    var isCacheAvailable = AppConfig.TempPath.FindFile(nodeVersion).IsFileExist();
                     // if (!isInstalled) installationSize = "Not installed";
 
                     NodeJsCollection.Add(new NodeJsRow()
@@ -188,7 +224,8 @@ namespace NodeManager.ViewModels
                         LtsName = ltsName,
                         DistUrl = distUrl,
                         InstallationSize = installationSize,
-                        InstallationPath = installationPath
+                        InstallationPath = installationPath,
+                        IsCacheAvailable = isCacheAvailable,
                     });
 
                     NodeJsFiltered = NodeJsCollection;

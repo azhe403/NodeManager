@@ -79,6 +79,7 @@
     <Compile Include="Models\AppConfig.cs" />
     <Compile Include="Models\AppModel.cs" />
     <Compile Include="Models\NodeJs.cs" />
+    <Compile Include="Models\NodeJsFilter.cs" />
     <Compile Include="Models\NodeJsRow.cs" />
     <Compile Include="Models\PackageJson.cs" />
     <Compile Include="ViewModels\NodeDownloaderViewModel.cs" />
