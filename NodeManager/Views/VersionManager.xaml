@@ -73,17 +73,17 @@
                     <MenuItem
                         Command="{Binding InstallOrUninstallCommand}"
                         CommandParameter="True"
-                        Header="Install only" />
-                    <MenuItem
-                        Command="{Binding InstallOrUninstallCommand}"
-                        CommandParameter="False"
-                        Header="Install and activate" />
+                        Header="{Binding InstallCaption}" />
+                    <!--  <MenuItem  -->
+                    <!--  Command="{Binding InstallOrUninstallCommand}"  -->
+                    <!--  CommandParameter="False"  -->
+                    <!--  Header="Install and activate" />  -->
                     <MenuItem
                         Command="{Binding ActivateSelectedCommand}"
                         Header="Activate" />
-                    <MenuItem
-                        Command="{Binding InstallOrUninstallCommand}"
-                        Header="{Binding InstallCaption}" />
+                    <!-- <MenuItem -->
+                    <!--     Command="{Binding InstallOrUninstallCommand}" -->
+                    <!--     Header="{Binding InstallCaption}" /> -->
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
