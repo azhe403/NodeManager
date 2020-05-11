@@ -19,7 +19,7 @@
 
     <Grid>
         <DataGrid
-            Margin="10,95,10,10"
+            Margin="10,62,10,10"
             AutoGenerateColumns="False"
             BorderBrush="Aqua"
             BorderThickness="1"
@@ -81,73 +81,12 @@
                     <MenuItem
                         Command="{Binding ActivateSelectedCommand}"
                         Header="Activate" />
-                    <!-- <MenuItem -->
-                    <!--     Command="{Binding InstallOrUninstallCommand}" -->
-                    <!--     Header="{Binding InstallCaption}" /> -->
+                    <!--  <MenuItem  -->
+                    <!--  Command="{Binding InstallOrUninstallCommand}"  -->
+                    <!--  Header="{Binding InstallCaption}" />  -->
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
-        <Button
-            Width="93"
-            Height="34"
-            Margin="0,50,10,0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Command="{Binding RefreshVersionCommand, IsAsync=True}"
-            Content="{Binding RefreshCaption}"
-            IsEnabled="{Binding IsIdle, IsAsync=True}" />
-        <!--  <Button  -->
-        <!--  Width="93"  -->
-        <!--  Height="34"  -->
-        <!--  Margin="0,50,110,0"  -->
-        <!--  HorizontalAlignment="Right"  -->
-        <!--  VerticalAlignment="Top"  -->
-        <!--  Command="{Binding InstallOrUninstallCommand, IsAsync=True}"  -->
-        <!--  Content="{Binding InstallCaption}"  -->
-        <!--  IsEnabled="{Binding IsIdle, IsAsync=True}" />  -->
-        <TextBox
-            Width="235"
-            Height="34"
-            Margin="0,10,10,0"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            VerticalContentAlignment="Center"
-            mah:TextBoxHelper.Watermark="Search.."
-            mah:TextBoxHelper.WatermarkWrapping="NoWrap"
-            IsEnabled="{Binding IsIdle}"
-            Text="{Binding SearchBox, UpdateSourceTrigger=PropertyChanged}" />
-        <!--  <ComboBox  -->
-        <!--  Width="200"  -->
-        <!--  Height="34"  -->
-        <!--  Margin="10,56,0,0"  -->
-        <!--  HorizontalAlignment="Left"  -->
-        <!--  VerticalAlignment="Top"  -->
-        <!--  ItemsSource="{Binding NodeJsFilters}" />  -->
-        <xctk:CheckComboBox
-            Height="28"
-            Margin="355,16,265,0"
-            VerticalAlignment="Top"
-            Command=""
-            DisplayMemberPath="Name"
-            ItemsSource="{Binding NodeJsFilters}"
-            SelectedItemsOverride="{Binding SelectedNodeJsFilters, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            SelectedMemberPath="Id"
-            ValueMemberPath="Id" />
-        <Label
-            x:Name="label"
-            Margin="10,10,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="Version Manager"
-            FontSize="28" />
-
-        <mah:ToggleSwitch
-            Width="100"
-            Margin="234,19,372,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Header="Enable NodeJs"
-            IsOn="{Binding IsEnableNodeJs}" />
 
         <mah:FlyoutsControl>
             <mah:Flyout
@@ -186,18 +125,81 @@
                 </Grid>
             </mah:Flyout>
         </mah:FlyoutsControl>
-        <Expander
-            Width="195"
-            Height="100"
-            Margin="10,62,0,0"
-            Padding="0"
+
+        <Button
+            Width="93"
+            Height="34"
+            Margin="0,22,10,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Command="{Binding RefreshVersionCommand, IsAsync=True}"
+            Content="{Binding RefreshCaption}"
+            IsEnabled="{Binding IsIdle, IsAsync=True}" />
+        <!--  <Button  -->
+        <!--  Width="93"  -->
+        <!--  Height="34"  -->
+        <!--  Margin="0,50,110,0"  -->
+        <!--  HorizontalAlignment="Right"  -->
+        <!--  VerticalAlignment="Top"  -->
+        <!--  Command="{Binding InstallOrUninstallCommand, IsAsync=True}"  -->
+        <!--  Content="{Binding InstallCaption}"  -->
+        <!--  IsEnabled="{Binding IsIdle, IsAsync=True}" />  -->
+        <TextBox
+            Width="140"
+            Height="34"
+            Margin="0,22,108,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            VerticalContentAlignment="Center"
+            mah:TextBoxHelper.Watermark="Search.."
+            mah:TextBoxHelper.WatermarkWrapping="NoWrap"
+            IsEnabled="{Binding IsIdle}"
+            Text="{Binding SearchBox, UpdateSourceTrigger=PropertyChanged}" />
+        <!--  <ComboBox  -->
+        <!--  Width="200"  -->
+        <!--  Height="34"  -->
+        <!--  Margin="10,56,0,0"  -->
+        <!--  HorizontalAlignment="Left"  -->
+        <!--  VerticalAlignment="Top"  -->
+        <!--  ItemsSource="{Binding NodeJsFilters}" />  -->
+        <xctk:CheckComboBox
+            Height="34"
+            Margin="305,22,253,0"
+            VerticalAlignment="Top"
+            Command=""
+            DisplayMemberPath="Name"
+            ItemsSource="{Binding NodeJsFilters}"
+            SelectedItemsOverride="{Binding SelectedNodeJsFilters, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            SelectedMemberPath="Id"
+            ValueMemberPath="Id" />
+        <Label
+            x:Name="label"
+            Margin="10,10,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            mah:ValidationHelper.CloseOnMouseLeftButtonDown="True"
-            Header="NodeJS Filter">
-            <Grid
-                Margin="0"
-                Background="#FFE5E5E5" />
-        </Expander>
+            Content="Version Manager"
+            FontSize="28" />
+
+        <!--  <mah:ToggleSwitch  -->
+        <!--  Width="100"  -->
+        <!--  Margin="234,19,372,0"  -->
+        <!--  HorizontalAlignment="Left"  -->
+        <!--  VerticalAlignment="Top"  -->
+        <!--  Header="Enable NodeJs"  -->
+        <!--  IsOn="{Binding IsEnableNodeJs}" />  -->
+
+        <!--  <Expander  -->
+        <!--  Width="195"  -->
+        <!--  Height="100"  -->
+        <!--  Margin="10,62,0,0"  -->
+        <!--  Padding="0"  -->
+        <!--  HorizontalAlignment="Left"  -->
+        <!--  VerticalAlignment="Top"  -->
+        <!--  mah:ValidationHelper.CloseOnMouseLeftButtonDown="True"  -->
+        <!--  Header="NodeJS Filter">  -->
+        <!--  <Grid  -->
+        <!--  Margin="0"  -->
+        <!--  Background="#FFE5E5E5" />  -->
+        <!-- </Expander> -->
     </Grid>
 </UserControl>
