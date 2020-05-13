@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Serilog;
 
 namespace NodeManager.Helpers
@@ -15,6 +17,13 @@ namespace NodeManager.Helpers
         public static string[] Lines(this string source)
         {
             return source.Split(new string[] {"\r\n", "\n"}, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public static string ToTitleCase(this string str)
+        {
+            CultureInfo cultureInfo = Thread.CurrentThread.CurrentCulture;
+            TextInfo textInfo = cultureInfo.TextInfo;
+            return textInfo.ToTitleCase(str);
         }
 
         public static bool IsNullOrEmpty(this string str)
