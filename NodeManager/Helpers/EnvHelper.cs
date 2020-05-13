@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Security.Principal;
 using System.Windows;
 
@@ -7,6 +8,9 @@ namespace NodeManager.Helpers
     internal static class EnvHelper
     {
         public static bool InDesignMode => !(Application.Current is App);
+
+        public static bool Is64BitProc => Environment.Is64BitProcess;
+        public static bool Is64BitOS => Environment.Is64BitOperatingSystem;
 
         public static bool IsAdministrator()
         {
@@ -23,7 +27,7 @@ namespace NodeManager.Helpers
             {
                 Verb = "runas"
             };
-            System.Diagnostics.Process.Start(startInfo);
+            Process.Start(startInfo);
             Application.Current.Shutdown();
         }
     }

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using ICSharpCode.SharpZipLib.Zip;
+using Serilog;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ICSharpCode.SharpZipLib.Zip;
-using Serilog;
-using SymbolicLinkSupport;
 
 namespace NodeManager.Helpers
 {
@@ -46,6 +45,12 @@ namespace NodeManager.Helpers
             }
 
             return dirPath;
+        }
+
+        public static string GetDirectoryName(this string dirPath)
+        {
+            // return Path.GetDirectoryName(dirPath);
+            return new DirectoryInfo(dirPath).Name;
         }
 
         public static double DirSize(this string path)
@@ -144,6 +149,11 @@ namespace NodeManager.Helpers
         #endregion Directory
 
         #region File
+
+        public static string GetFileName(this string path)
+        {
+            return Path.GetFileName(path);
+        }
 
         public static string FindFile(this string dirPath, string filter)
         {
@@ -254,26 +264,5 @@ namespace NodeManager.Helpers
         }
 
         #endregion Zip Archiver
-
-        #region Symlink
-
-        public static void CreateSymlink(this string dirPath, string targetPath)
-        {
-            Log.Information($"Map Symlink {dirPath} to {targetPath}");
-
-            var dirInfo = new DirectoryInfo(dirPath);
-            dirInfo.CreateSymbolicLink(targetPath);
-
-            var isSymlink = dirInfo.IsSymbolicLinkValid();
-            Log.Information($"Is created: {isSymlink}");
-        }
-
-        public static bool IsSymlink(this string dirPath)
-        {
-            var dirInfo = new DirectoryInfo(dirPath);
-            return dirInfo.IsSymbolicLinkValid();
-        }
-
-        #endregion Symlink
     }
 }
