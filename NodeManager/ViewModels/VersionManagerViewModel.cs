@@ -5,7 +5,6 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Serilog;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -168,7 +167,20 @@ namespace NodeManager.ViewModels
 
         private void SelectedNodeJsFiltersOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            throw new NotImplementedException();
+            var selectedItems = (ObservableCollection<NodeJsFilter>)sender;
+            if (selectedItems == null)
+            {
+                Log.Error("Object sender is nul");
+                return;
+            }
+
+            if (selectedItems.Count <= 0)
+            {
+                Log.Warning("Select one for apply filtering");
+                return;
+            }
+
+            var slug = selectedItems[0].Id;
         }
 
         private async Task LoadVersionAsync()
@@ -277,8 +289,11 @@ namespace NodeManager.ViewModels
 
         private void CancelInstall()
         {
-            webClient.CancelAsync();
+            _webClient.CancelAsync();
             InstallCaption = "Install";
+            DownloadTitle = "Initializing";
+            DownloadDetail = "";
+            ProgressPercentage = 0;
             IsOpenDownloadPane = false;
             IsIdle = true;
         }
@@ -408,9 +423,10 @@ namespace NodeManager.ViewModels
         {
             // var dirs = Directory.GetDirectories(installDir);
             // var installNode = dirs.FirstOrDefault(str => str.Contains(version));
+            var nodeVersion = SelectedNodeJs.NodeVersion;
 
-            Log.Information($"Activating Node {SelectedNodeJs.NodeVersion}");
-            var installNode = AppConfig.NodePath.FindPath(SelectedNodeJs.NodeVersion);
+            Log.Information($"Activating Node {nodeVersion}");
+            var installNode = AppConfig.NodePath.FindPath(nodeVersion);
             Log.Information("Creating Symlink");
             installNode.CreateSymlink(AppConfig.SymlinkPath);
         }
@@ -453,7 +469,7 @@ namespace NodeManager.ViewModels
         private string _downloadDetail;
         private int _downloadPercentage;
 
-        private WebClient webClient; // Our WebClient that will be doing the downloading for us
+        private WebClient _webClient; // Our WebClient that will be doing the downloading for us
         private Stopwatch sw = new Stopwatch();
 
         public string DownloadSpeed
@@ -495,14 +511,14 @@ namespace NodeManager.ViewModels
         public void DownloadFileAsync(string urlAddress, string location)
         {
             DownloadTitle = $"Initializing..";
-            using (webClient = new WebClient())
+            using (_webClient = new WebClient())
             {
-                webClient.DownloadFileCompleted += Completed;
-                webClient.DownloadProgressChanged += ProgressChanged;
+                _webClient.DownloadFileCompleted += Completed;
+                _webClient.DownloadProgressChanged += ProgressChanged;
 
                 // The variable that will be holding the url address (making sure it starts with http://)
                 //Uri URL = urlAddress.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ? new Uri(urlAddress) : new Uri("http://" + urlAddress);
-                Uri URL = new Uri(urlAddress);
+                Uri url = new Uri(urlAddress);
 
                 // Start the stopwatch which we will be using to calculate the download speed
                 sw.Start();
@@ -510,7 +526,7 @@ namespace NodeManager.ViewModels
                 try
                 {
                     // Start downloading the file
-                    webClient.DownloadFileAsync(URL, location);
+                    _webClient.DownloadFileAsync(url, location);
                 }
                 catch (Exception ex)
                 {
@@ -552,14 +568,14 @@ namespace NodeManager.ViewModels
             // Reset the stopwatch.
             sw.Reset();
 
-            if (e.Cancelled == true)
+            if (e.Cancelled)
             {
                 Log.Information("Download has been canceled.");
             }
             else
             {
                 Log.Information("Download completed!");
-                OnDownloadCompleteAsync();
+                OnDownloadCompleteAsync().Wait();
             }
         }
 
