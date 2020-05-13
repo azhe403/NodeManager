@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -66,6 +66,7 @@
     <Compile Include="Converters\SelectedItemToContentConverter.cs" />
     <Compile Include="Helpers\DialogHelper.cs" />
     <Compile Include="Helpers\EnvHelper.cs" />
+    <Compile Include="Helpers\NodeHelper.cs" />
     <Compile Include="Helpers\NotifyHelper.cs" />
     <Compile Include="Helpers\NumericHelper.cs" />
     <Compile Include="Helpers\PrismHelper.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Helpers\StrHelper.cs" />
     <Compile Include="Models\AppConfig.cs" />
     <Compile Include="Models\AppModel.cs" />
+    <Compile Include="Models\NodeActive.cs" />
     <Compile Include="Models\NodeJs.cs" />
     <Compile Include="Models\NodeJsFilter.cs" />
     <Compile Include="Models\NodeJsRow.cs" />

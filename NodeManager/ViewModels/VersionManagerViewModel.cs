@@ -181,6 +181,8 @@ namespace NodeManager.ViewModels
             }
 
             var slug = selectedItems[0].Id;
+
+            NodeHelper.GetActiveNode();
         }
 
         private async Task LoadVersionAsync()
