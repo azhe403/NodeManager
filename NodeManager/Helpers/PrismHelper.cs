@@ -1,14 +1,14 @@
 ﻿using Prism.Regions;
-using Prism.Services.Dialogs;
 using System.Linq;
 
 namespace NodeManager.Helpers
 {
-    internal class PrismHelper
+    internal static class PrismHelper
     {
         public static IRegionManager RegionManager { get; set; }
 
-        public static void Navigate(string regionName, string navigatePath, NavigationParameters navigationParameters = null)
+        public static void Navigate(string regionName, string navigatePath,
+            NavigationParameters navigationParameters = null)
         {
             if (RegionManager == null)
             {
