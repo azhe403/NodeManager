@@ -163,8 +163,10 @@
         <!--  VerticalAlignment="Top"  -->
         <!--  ItemsSource="{Binding NodeJsFilters}" />  -->
         <xctk:CheckComboBox
+            Width="200"
             Height="34"
             Margin="305,22,253,0"
+            HorizontalAlignment="Right"
             VerticalAlignment="Top"
             Command=""
             DisplayMemberPath="Name"

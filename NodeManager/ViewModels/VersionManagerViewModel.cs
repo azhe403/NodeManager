@@ -167,12 +167,14 @@ namespace NodeManager.ViewModels
 
         private void SelectedNodeJsFiltersOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            var selectedItems = (ObservableCollection<NodeJsFilter>) sender;
+            var selectedItems = (ObservableCollection<NodeJsFilter>)sender;
             if (selectedItems == null)
             {
                 Log.Error("Object sender is nul");
                 return;
             }
+
+            Parallel.Invoke(async () => await LoadVersionAsync());
 
             if (selectedItems.Count <= 0)
             {
@@ -241,11 +243,29 @@ namespace NodeManager.ViewModels
                         InstallationPath = installationPath,
                         IsCacheAvailable = isCacheAvailable,
                     });
+                }
 
+                // NodeJsFiltered = NodeJsCollection;
+
+                // NodeJsFiltered = NodeJsCollection.Where(node =>
+                // {
+                //     return node.IsInstalled && SelectedNodeJsFilters.Any(x => x.Id.Contains("is_installed"));
+                // }).ToObservableCollection();
+
+                if (SelectedNodeJsFilters.Count > 0)
+                {
+                    var linq = from node in NodeJsCollection
+                               where (node.IsInstalled && SelectedNodeJsFilters.Any(id => id.Id.Contains("is_installed")))
+                                     || (node.IsLts && SelectedNodeJsFilters.Any(id => id.Id.Contains("is_lts")))
+                               select node;
+                    NodeJsFiltered = linq.ToObservableCollection();
+                }
+                else
+                {
                     NodeJsFiltered = NodeJsCollection;
                 }
 
-                var loadedMsg = $"NodeJs loaded {NodeJsCollection.Count} items";
+                var loadedMsg = $"NodeJs loaded {NodeJsFiltered.Count} of {NodeJsCollection.Count} items";
                 Log.Information(loadedMsg);
                 NotifyHelper.Info(loadedMsg);
             }
