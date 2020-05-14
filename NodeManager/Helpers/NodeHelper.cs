@@ -1,5 +1,6 @@
 ﻿using NodeManager.Models;
 using System;
+using System.Threading.Tasks;
 using Serilog;
 
 namespace NodeManager.Helpers
@@ -29,6 +30,17 @@ namespace NodeManager.Helpers
                 OperatingSystem = os,
                 Platform = platform
             };
+        }
+
+        public static async Task<string> CalculateInstalledSize(string installationPath)
+        {
+            var size = "0 B";
+            if (installationPath.IsDirExist())
+            {
+                size = (await installationPath.DirSize3Async(false)).SizeFormat();
+            }
+
+            return size;
         }
     }
 }

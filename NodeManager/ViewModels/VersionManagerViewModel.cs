@@ -167,7 +167,7 @@ namespace NodeManager.ViewModels
 
         private void SelectedNodeJsFiltersOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            var selectedItems = (ObservableCollection<NodeJsFilter>)sender;
+            var selectedItems = (ObservableCollection<NodeJsFilter>) sender;
             if (selectedItems == null)
             {
                 Log.Error("Object sender is nul");
@@ -224,7 +224,7 @@ namespace NodeManager.ViewModels
                     var distUrl = $"https://nodejs.org/dist/{nodeJs.NodeVersion}/node-{nodeJs.NodeVersion}-win-x64.zip";
                     var installationPath = installDir.FindPath(nodeVersion, logging: false);
                     var isInstalled = installationPath != null;
-                    var installationSize = (await installationPath.DirSize3Async(false)).SizeFormat();
+                    var installationSize = await NodeHelper.CalculateInstalledSize(installationPath);
                     var isCacheAvailable = AppConfig.TempPath.FindFile(nodeVersion).IsFileExist();
                     // if (!isInstalled) installationSize = "Not installed";
 
