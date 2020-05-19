@@ -5,10 +5,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:NodeManager.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="450"
+    d:DesignHeight="650"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
-        <local:StorageViewer />
+        <WrapPanel>
+            <local:StorageViewer
+                Width="300"
+                Height="250" />
+            <local:AppUpdater
+                Width="300"
+                Height="250" />
+        </WrapPanel>
     </Grid>
 </UserControl>
