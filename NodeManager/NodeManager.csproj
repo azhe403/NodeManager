@@ -207,6 +207,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf">
+      <Version>1.0.8</Version>
+    </PackageReference>
     <PackageReference Include="HtmlAgilityPack">
       <Version>1.11.23</Version>
     </PackageReference>
@@ -252,7 +255,7 @@
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\icons8_nodejs.ico" />
+    <Resource Include="Resources\icons8_nodejs.ico" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

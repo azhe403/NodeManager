@@ -3,21 +3,40 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:prism="http://prismlibrary.com/"
+    xmlns:tb="http://www.hardcodet.net/taskbar"
+    xmlns:views="clr-namespace:NodeManager.Views"
     xmlns:vm="clr-namespace:NodeManager.ViewModels"
     Title="{Binding Title}"
     MinWidth="830"
     MinHeight="440"
-    prism:ViewModelLocator.AutoWireViewModel="True"
+    prism:ViewModelLocator.AutoWireViewModel="False"
     SaveWindowPosition="True"
     TitleAlignment="Center"
-    TitleCharacterCasing="Normal">
+    TitleCharacterCasing="Normal"
+    WindowState="{Binding CurrentWindowState}">
 
-    <!--<controls:MetroWindow.DataContext>
+    <controls:MetroWindow.DataContext>
         <vm:MainWindowViewModel />
-    </controls:MetroWindow.DataContext>-->
+    </controls:MetroWindow.DataContext>
+
+    <controls:MetroWindow.Resources>
+        <ResourceDictionary />
+    </controls:MetroWindow.Resources>
 
     <Grid>
+        <tb:TaskbarIcon
+            DoubleClickCommand="{Binding OnDoubleClickTrayCommand}"
+            IconSource="pack://application:,,,/Resources/icons8_nodejs.ico"
+            ToolTipText="Node Manager">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Exit" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+
         <controls:HamburgerMenu
             x:Name="HamburgerMenuControl"
             Margin="0,0,0,40"

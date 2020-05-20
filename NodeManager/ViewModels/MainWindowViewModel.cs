@@ -16,6 +16,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using NodeManager.Models;
+using Prism.Commands;
+using System.Windows;
 
 namespace NodeManager.ViewModels
 {
@@ -24,6 +26,7 @@ namespace NodeManager.ViewModels
         private string _title = "Node Version Manager";
         private List<string> listLogs;
         private int _selectedLine;
+        private WindowState _currentWindowState;
         private Stopwatch _stopwatchLogs;
         private HamburgerMenuItemCollection _hamburgerMenuItemCollection;
 
@@ -51,12 +54,22 @@ namespace NodeManager.ViewModels
             set => SetProperty(ref listLogs, value);
         }
 
+        public WindowState CurrentWindowState
+        {
+            get => _currentWindowState;
+            set => SetProperty(ref _currentWindowState, value);
+        }
+
+        public DelegateCommand OnDoubleClickTrayCommand { get; set; }
+
         //public MainWindowViewModel()
         //{
         //}
 
-        public MainWindowViewModel(IRegionManager regionManager)
+        public MainWindowViewModel()
         {
+            // IRegionManager regionManager
+
             BuildMenuItems();
 
             if (EnvHelper.IsAdministrator())
@@ -64,12 +77,18 @@ namespace NodeManager.ViewModels
                 Title += " (Administrator)";
             }
 
-            PrismHelper.RegionManager = regionManager;
+            OnDoubleClickTrayCommand = new DelegateCommand(OnDoubleClickTray);
+
+            // PrismHelper.RegionManager = regionManager;
             _stopwatchLogs = new Stopwatch();
 
             Parallel.Invoke(async () => await LoadLogsAsync());
 
             LogsWatcher();
+        }
+
+        private void OnDoubleClickTray()
+        {
         }
 
         private void BuildMenuItems()

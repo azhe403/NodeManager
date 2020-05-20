@@ -42,7 +42,9 @@ namespace NodeManager.ViewModels
             };
 
             Log.Information("Opening dialog");
-            if (openDir.ShowDialog() == DialogResult.OK)
+            if (openDir.ShowDialog() != DialogResult.OK) return;
+
+            await Task.Run(() =>
             {
                 var selectedDir = openDir.SelectedPath;
                 Log.Information($"SelectedDir: {selectedDir}");
@@ -67,7 +69,7 @@ namespace NodeManager.ViewModels
 
                         // Log.Information($"Search: {search}");
 
-                        ListNpmPackages.Rows.Add(mapDep.Key, mapDep.Value);
+                        ListNpmPackages.Rows.Add(packageName, packageVersion);
                     }
 
                     var devDeps = jsonModel.DevDependencies;
@@ -84,7 +86,7 @@ namespace NodeManager.ViewModels
                 {
                     Log.Information($"package.json in {selectedDir} is not exist.");
                 }
-            }
+            });
         }
     }
 }

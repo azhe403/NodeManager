@@ -1,4 +1,5 @@
-﻿using NodeManager.Views;
+﻿using NodeManager.Helpers;
+using NodeManager.Views;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
@@ -18,6 +19,8 @@ namespace NodeManager
         public void OnInitialized(IContainerProvider containerProvider)
         {
             var regionManager = containerProvider.Resolve<IRegionManager>();
+            PrismHelper.RegionManager = regionManager;
+
             //regionManager.RequestNavigate("MainRegion", "VersionManager");
         }
     }
