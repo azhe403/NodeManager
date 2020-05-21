@@ -154,6 +154,8 @@ namespace NodeManager.ViewModels
             var logPath = Path.Combine(AppConfig.LogsPath, $"App-{date}.log");
 
             ListLogs = new List<string>();
+            if (!logPath.IsFileExist()) return;
+
             using (FileStream fs = new FileStream(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
             {
