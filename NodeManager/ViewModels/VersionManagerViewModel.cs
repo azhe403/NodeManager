@@ -207,7 +207,7 @@ namespace NodeManager.ViewModels
                 if (!localJson.IsFileExist())
                 {
                     Log.Information("Updating registry Cache");
-                    await url.WithTimeout(5)
+                    await url.WithTimeout(10)
                         .DownloadFileAsync(Path.GetDirectoryName(localJson), Path.GetFileName(localJson));
                 }
 
