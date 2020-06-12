@@ -34,6 +34,12 @@ namespace NodeManager.Helpers
 
         public static string GetSymlinkTarget(this string symlinkPath)
         {
+            if (!symlinkPath.IsDirExist())
+            {
+                Log.Information($"Path {symlinkPath} is not exist or installed.");
+                return null;
+            }
+
             if (!IsSymlink(symlinkPath))
             {
                 Log.Warning($"Path {symlinkPath} is not Symlink");

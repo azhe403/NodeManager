@@ -9,7 +9,13 @@ namespace NodeManager.Helpers
     {
         public static NodeActive GetActiveNode()
         {
-            var nodeFolder = AppConfig.SymlinkPath.GetSymlinkTarget().GetDirectoryName();
+            var symlinkTarget = AppConfig.SymlinkPath.GetSymlinkTarget();
+            if (symlinkTarget == null)
+            {
+                return null;
+            }
+
+            var nodeFolder = symlinkTarget.GetDirectoryName();
             var splitFolder = nodeFolder.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
 
             if (splitFolder.Length != 4)
