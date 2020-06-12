@@ -1,4 +1,4 @@
-using ICSharpCode.SharpZipLib.Zip;
+﻿using ICSharpCode.SharpZipLib.Zip;
 using Serilog;
 using System;
 using System.IO;
@@ -11,6 +11,9 @@ namespace NodeManager.Helpers
     {
         #region Directory
 
+        /// <summary>Ensures the directory of file name is created.</summary>
+        /// <param name="dirPath">The dir path.</param>
+        /// <returns></returns>
         public static string EnsureDirectory(this string dirPath)
         {
             var path = Path.GetDirectoryName(dirPath);
@@ -29,6 +32,9 @@ namespace NodeManager.Helpers
             return dirPath;
         }
 
+        /// <summary>Safe deletes the directory if exist.</summary>
+        /// <param name="dirPath">The dir path.</param>
+        /// <returns></returns>
         public static string DeleteDirectory(this string dirPath)
         {
             var path = Path.GetDirectoryName(dirPath);
@@ -47,12 +53,22 @@ namespace NodeManager.Helpers
             return dirPath;
         }
 
+        /// <summary>
+        /// Get name of directory from given path.
+        /// </summary>
+        /// <param name="dirPath"></param>
+        /// <returns></returns>
         public static string GetDirectoryName(this string dirPath)
         {
             // return Path.GetDirectoryName(dirPath);
             return new DirectoryInfo(dirPath).Name;
         }
 
+        /// <summary>
+        /// Calculating directory size. Method 1
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static double DirSize(this string path)
         {
             var d = new DirectoryInfo(path);
@@ -75,6 +91,11 @@ namespace NodeManager.Helpers
             return size;
         }
 
+        /// <summary>
+        /// Calculating directory size. Method 2
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static double DirSize2(this string path)
         {
             if (!path.IsDirExist())
@@ -88,6 +109,12 @@ namespace NodeManager.Helpers
                    dir.GetDirectories().Sum(di => DirSize2(path));
         }
 
+        /// <summary>
+        /// Calculating directory size. Method 3
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="logging"></param>
+        /// <returns></returns>
         public static double DirSize3(this string path, bool logging = true)
         {
             try
@@ -120,6 +147,12 @@ namespace NodeManager.Helpers
             }
         }
 
+        /// <summary>
+        /// Calculating directory size with async. Method 3
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="logging"></param>
+        /// <returns></returns>
         public static async Task<double> DirSize3Async(this string path, bool logging = true)
         {
             double dirSize = 0;
@@ -128,33 +161,55 @@ namespace NodeManager.Helpers
             return dirSize;
         }
 
+        /// <summary>
+        /// Check if directory exist from given path
+        /// </summary>
+        /// <param name="dirPath"></param>
+        /// <returns></returns>
         public static bool IsDirExist(this string dirPath)
         {
             return Directory.Exists(dirPath);
         }
 
+        /// <summary>
+        /// Find directory name contains given filter.
+        /// </summary>
+        /// <param name="dirPath">Directory path</param>
+        /// <param name="filter">Filter string</param>
+        /// <param name="logging">Log when finding path</param>
+        /// <returns></returns>
         public static string FindPath(this string dirPath, string filter, bool logging = true)
         {
             if (logging) Log.Information($"Find path contains '{filter}' in {dirPath}");
             var dirs = Directory.GetDirectories(dirPath);
-            var installNode = dirs.FirstOrDefault(str => str.Contains(filter));
+            var foundDir = dirs.FirstOrDefault(str => str.Contains(filter));
 
-            if (!installNode.IsNullOrEmpty())
+            if (!foundDir.IsNullOrEmpty())
                 if (logging)
-                    Log.Information($"Found {installNode}");
+                    Log.Information($"Found {foundDir}");
 
-            return installNode;
+            return foundDir;
         }
 
         #endregion Directory
 
         #region File
 
+        /// <summary>
+        /// Get file name from given full file path.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static string GetFileName(this string path)
         {
             return Path.GetFileName(path);
         }
-
+        /// <summary>
+        /// Find file name contains filter string.
+        /// </summary>
+        /// <param name="dirPath"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
         public static string FindFile(this string dirPath, string filter)
         {
             var dirs = Directory.GetFiles(dirPath);
@@ -163,11 +218,20 @@ namespace NodeManager.Helpers
             return filteredDir;
         }
 
+        /// <summary>
+        /// Check file if exist from given file path.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public static bool IsFileExist(this string filePath)
         {
             return File.Exists(filePath);
         }
 
+        /// <summary>
+        /// Safe delete file with check file if exist before delete.
+        /// </summary>
+        /// <param name="path"></param>
         public static void DeleteFile(this string path)
         {
             if (File.Exists(path))
@@ -177,6 +241,11 @@ namespace NodeManager.Helpers
             }
         }
 
+        /// <summary>
+        /// Delete all file on given directory.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="andThis"></param>
         public static void DeleteAllFiles(this string path, bool andThis = false)
         {
             DirectoryInfo di = new DirectoryInfo(path);
@@ -199,6 +268,12 @@ namespace NodeManager.Helpers
             }
         }
 
+        /// <summary>
+        /// Delete all file on given directory with async.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="andThis"></param>
+        /// <returns></returns>
         public static async Task DeleteAllFilesAsync(this string path, bool andThis)
         {
             await Task.Run(() => { DeleteAllFiles(path, andThis); });
