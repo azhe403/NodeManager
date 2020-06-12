@@ -1,12 +1,43 @@
 ﻿using NodeManager.Models;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using Flurl.Http;
 using Serilog;
 
 namespace NodeManager.Helpers
 {
     internal static class NodeHelper
     {
+        public static async Task<List<NodeJs>> LoadCloudNodeJs()
+        {
+            var fileStamp = DateTime.Now.ToString("yyyy-MM-dd");
+            var localJson = Path.Combine(AppConfig.CachesPath, $"node-registry_{fileStamp}.json");
+
+            var url = "https://nodejs.org/dist/index.json";
+            Log.Information($"Loading NodeJs registry");
+
+            if (!localJson.IsFileExist())
+            {
+                Log.Information("Updating registry Cache");
+                await url.WithTimeout(10)
+                    .DownloadFileAsync(Path.GetDirectoryName(localJson), Path.GetFileName(localJson));
+            }
+
+            var json = File.ReadAllText(localJson);
+            var nodeModels = NodeJs.FromJson(json);
+
+            return nodeModels.ToList();
+        }
+
+        public static string GetDistUrl(this NodeJs nodeJs)
+        {
+            var distUrl = $"https://nodejs.org/dist/{nodeJs.NodeVersion}/node-{nodeJs.NodeVersion}-win-x64.zip";
+            return distUrl;
+        }
+
         public static NodeActive GetActiveNode()
         {
             var symlinkTarget = AppConfig.SymlinkPath.GetSymlinkTarget();

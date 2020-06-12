@@ -198,21 +198,7 @@ namespace NodeManager.ViewModels
                 IsIdle = false;
 
                 var installDir = AppConfig.NodePath;
-                var fileStamp = DateTime.Now.ToString("yyyy-MM-dd");
-                var localJson = Path.Combine(AppConfig.CachesPath, $"node-registry_{fileStamp}.json");
-
-                var url = "https://nodejs.org/dist/index.json";
-                Log.Information($"Loading NodeJs registry");
-
-                if (!localJson.IsFileExist())
-                {
-                    Log.Information("Updating registry Cache");
-                    await url.WithTimeout(10)
-                        .DownloadFileAsync(Path.GetDirectoryName(localJson), Path.GetFileName(localJson));
-                }
-
-                var json = File.ReadAllText(localJson);
-                var nodeModels = NodeJs.FromJson(json);
+                var nodeModels = await NodeHelper.LoadCloudNodeJs();
 
                 Log.Information("Preparing to View");
                 // ListNodeVersions.Clear();
@@ -223,12 +209,10 @@ namespace NodeManager.ViewModels
                     var npmVersion = nodeJs.NpmVersion;
                     var isLts = nodeJs.Lts.Bool ?? true;
                     var ltsName = nodeJs.Lts.Enum.ToString() ?? "Non-LTS";
-                    var distUrl = $"https://nodejs.org/dist/{nodeJs.NodeVersion}/node-{nodeJs.NodeVersion}-win-x64.zip";
                     var installationPath = installDir.FindPath(nodeVersion, logging: false);
                     var isInstalled = installationPath != null;
                     var installationSize = await NodeHelper.CalculateInstalledSize(installationPath);
                     var isCacheAvailable = AppConfig.TempPath.FindFile(nodeVersion).IsFileExist();
-                    // if (!isInstalled) installationSize = "Not installed";
 
                     NodeJsCollection.Add(new NodeJsRow()
                     {
@@ -238,7 +222,7 @@ namespace NodeManager.ViewModels
                         IsLts = isLts,
                         IsInstalled = isInstalled,
                         LtsName = ltsName,
-                        DistUrl = distUrl,
+                        DistUrl = nodeJs.GetDistUrl(),
                         InstallationSize = installationSize,
                         InstallationPath = installationPath,
                         IsCacheAvailable = isCacheAvailable,
