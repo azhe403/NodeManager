@@ -20,7 +20,7 @@
             Margin="10,10,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Content="Storage Viewer"
+            Content="Storage sense"
             FontSize="26" />
         <Label
             Width="110"
@@ -32,10 +32,9 @@
             FontSize="20" />
         <Button
             Width="75"
-            Height="45"
-            Margin="10,0,0,63"
+            Margin="10,220,0,0"
             HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
+            VerticalAlignment="Top"
             Content="Clear All" />
         <Label
             Margin="10,60,0,0"
