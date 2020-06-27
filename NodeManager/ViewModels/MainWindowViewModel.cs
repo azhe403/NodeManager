@@ -79,10 +79,18 @@ namespace NodeManager.ViewModels
 
             OnDoubleClickTrayCommand = new DelegateCommand(OnDoubleClickTray);
 
+            if (!Environment.Is64BitOperatingSystem)
+            {
+                var osWarn = "This is Windows 32-bit operating system. Currently NodeManager support for x64 Only.";
+                DialogHelper.WarnDialog(osWarn,"OS architecture problem");
+
+                Application.Current.Shutdown(0);
+            }
+
             // PrismHelper.RegionManager = regionManager;
             _stopwatchLogs = new Stopwatch();
 
-            Parallel.Invoke(async () => await LoadLogsAsync());
+            Parallel.Invoke(async () => await LoadLogsAsync().ConfigureAwait(false));
 
             LogsWatcher();
         }
@@ -142,10 +150,10 @@ namespace NodeManager.ViewModels
                 if (_stopwatchLogs.Elapsed.Seconds >= 1)
                 {
                     _stopwatchLogs.Stop();
-                    await LoadLogsAsync();
+                    await LoadLogsAsync().ConfigureAwait(false);
                     _stopwatchLogs.Start();
                 }
-            }, token);
+            }, token).ConfigureAwait(false);
         }
 
         private async Task LoadLogsAsync()
@@ -159,7 +167,7 @@ namespace NodeManager.ViewModels
             using (FileStream fs = new FileStream(logPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
             {
-                var logs = await sr.ReadToEndAsync();
+                var logs = await sr.ReadToEndAsync().ConfigureAwait(false);
                 ListLogs.AddRange(logs.Lines().Reverse());
             }
 
