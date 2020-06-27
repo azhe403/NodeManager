@@ -16,7 +16,7 @@ namespace NodeManager.Helpers
             }
 
             Log.Information($"Getting Json {url}");
-            var jsonMeta = await url.GetStringAsync();
+            var jsonMeta = await url.GetStringAsync().ConfigureAwait(false);
             return jsonMeta;
         }
 
@@ -24,7 +24,7 @@ namespace NodeManager.Helpers
         {
             var url = $"https://registry.npmjs.org/-/package/{packageName}/dist-tags";
             Log.Information($"Getting Json {url}");
-            var jsonMeta = await url.GetStringAsync();
+            var jsonMeta = await url.GetStringAsync().ConfigureAwait(false);
             return jsonMeta;
         }
 
@@ -33,7 +33,7 @@ namespace NodeManager.Helpers
             var url = $"https://registry.npmjs.com/-/v1/search?text={packageName}&limit={limit}";
 
             Log.Information($"Getting Json {url}");
-            var json = await url.GetStringAsync();
+            var json = await url.GetStringAsync().ConfigureAwait(false);
             return json;
         }
     }

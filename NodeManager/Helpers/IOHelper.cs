@@ -1,5 +1,4 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
-using Serilog;
+﻿using Serilog;
 using System;
 using System.IO;
 using System.Linq;
@@ -156,7 +155,8 @@ namespace NodeManager.Helpers
         public static async Task<double> DirSize3Async(this string path, bool logging = true)
         {
             double dirSize = 0;
-            await Task.Run(() => { dirSize = DirSize3(path, logging); });
+            await Task.Run(() => { dirSize = DirSize3(path, logging); })
+                .ConfigureAwait(false);
 
             return dirSize;
         }
@@ -204,6 +204,7 @@ namespace NodeManager.Helpers
         {
             return Path.GetFileName(path);
         }
+
         /// <summary>
         /// Find file name contains filter string.
         /// </summary>
@@ -276,7 +277,8 @@ namespace NodeManager.Helpers
         /// <returns></returns>
         public static async Task DeleteAllFilesAsync(this string path, bool andThis)
         {
-            await Task.Run(() => { DeleteAllFiles(path, andThis); });
+            await Task.Run(() => { DeleteAllFiles(path, andThis); })
+                .ConfigureAwait(false);
         }
 
         #endregion File

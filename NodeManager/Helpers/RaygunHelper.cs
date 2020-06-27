@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Mindscape.Raygun4Net;
-using Mindscape.Raygun4Net.Messages;
 
 namespace NodeManager.Helpers
 {

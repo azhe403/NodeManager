@@ -23,7 +23,12 @@ namespace NodeManager.Helpers
         public static async Task FastUnzipAsync(this string filePath, string destinationPath,
             bool createEmptyDir = false)
         {
-            await Task.Run(() => { FastUnzip(filePath, destinationPath, createEmptyDir); });
+            await Task.Run(() =>
+                {
+                    Log.Debug("Async FastUnzip");
+                    FastUnzip(filePath, destinationPath, createEmptyDir);
+                })
+                .ConfigureAwait(false);
         }
 
         public static bool IsZipValid(this string filePath)
@@ -57,7 +62,8 @@ namespace NodeManager.Helpers
         {
             var isValid = false;
 
-            await Task.Run(() => { isValid = IsZipValid(filePath); });
+            await Task.Run(() => { isValid = IsZipValid(filePath); })
+                .ConfigureAwait(false);
 
             return isValid;
         }

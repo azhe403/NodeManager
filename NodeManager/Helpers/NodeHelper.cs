@@ -23,7 +23,8 @@ namespace NodeManager.Helpers
             {
                 Log.Information("Updating registry Cache");
                 await url.WithTimeout(10)
-                    .DownloadFileAsync(Path.GetDirectoryName(localJson), Path.GetFileName(localJson));
+                    .DownloadFileAsync(Path.GetDirectoryName(localJson), Path.GetFileName(localJson))
+                    .ConfigureAwait(false);
             }
 
             var json = File.ReadAllText(localJson);
@@ -74,7 +75,9 @@ namespace NodeManager.Helpers
             var size = "0 B";
             if (installationPath.IsDirExist())
             {
-                size = (await installationPath.DirSize3Async(false)).SizeFormat();
+                var rawSize = await installationPath.DirSize3Async(false)
+                    .ConfigureAwait(false);
+                size = rawSize.SizeFormat();
             }
 
             return size;
