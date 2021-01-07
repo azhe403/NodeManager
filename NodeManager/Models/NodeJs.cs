@@ -7,16 +7,20 @@ namespace NodeManager.Models
 {
     public partial class NodeJs
     {
-        [JsonProperty("version")] public string NodeVersion { get; set; }
+        [JsonProperty("version")] 
+        public string NodeVersion { get; set; }
 
-        [JsonProperty("date")] public DateTimeOffset Date { get; set; }
+        [JsonProperty("date")] 
+        public DateTimeOffset Date { get; set; }
 
-        [JsonProperty("files")] public NodeFile[] NodeFiles { get; set; }
+        [JsonProperty("files")] 
+        public NodeFile[] NodeFiles { get; set; }
 
         [JsonProperty("npm", NullValueHandling = NullValueHandling.Ignore)]
         public string NpmVersion { get; set; }
 
-        [JsonProperty("v8")] public string V8 { get; set; }
+        [JsonProperty("v8")] 
+        public string V8 { get; set; }
 
         [JsonProperty("uv", NullValueHandling = NullValueHandling.Ignore)]
         public string Uv { get; set; }
@@ -30,9 +34,11 @@ namespace NodeManager.Models
         [JsonProperty("modules", NullValueHandling = NullValueHandling.Ignore)]
         public ModulesUnion? Modules { get; set; }
 
-        [JsonProperty("lts")] public LtsUnion Lts { get; set; }
+        [JsonProperty("lts")] 
+        public LtsUnion Lts { get; set; }
 
-        [JsonProperty("security")] public bool Security { get; set; }
+        [JsonProperty("security")] 
+        public bool Security { get; set; }
     }
 
     public enum NodeFile
@@ -61,7 +67,6 @@ namespace NodeManager.Models
         WinX86Msi,
         WinX86Zip
     };
-
     public enum LtsEnum
     {
         Argon,
@@ -69,9 +74,9 @@ namespace NodeManager.Models
         Carbon,
         Dubnium,
         Erbium,
-        NonLTS
-    };
-
+        NonLTS,
+        Fermium
+    }
     public enum ModulesEnum
     {
         The0X000A,
@@ -86,7 +91,7 @@ namespace NodeManager.Models
         The128
     };
 
-    public partial struct LtsUnion
+    public struct LtsUnion
     {
         public bool? Bool;
         public LtsEnum? Enum;
@@ -96,7 +101,7 @@ namespace NodeManager.Models
         public static implicit operator LtsUnion(LtsEnum @enum) => new LtsUnion { Enum = @enum };
     }
 
-    public partial struct ModulesUnion
+    public struct ModulesUnion
     {
         public ModulesEnum? Enum;
         public long? Integer;
@@ -360,6 +365,9 @@ namespace NodeManager.Models
 
                         case "Erbium":
                             return new LtsUnion { Enum = LtsEnum.Erbium };
+
+                        case "Fermium":
+                            return new LtsUnion { Enum = LtsEnum.Fermium };
                     }
 
                     break;
